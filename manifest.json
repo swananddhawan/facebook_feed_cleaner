@@ -1,0 +1,24 @@
+{
+    "manifest_version": 2,
+    "name": "Facebook Feed Cleaner",
+    "version": "1.0",
+    "description": "Hides or removes posts in your Facebook feed from users you do not follow.",
+    "permissions": [
+        "activeTab",
+        "webNavigation"
+    ],
+    "background": {
+        "scripts": ["background.js"],
+        "persistent": false
+    },
+    "content_scripts": [
+        {
+            "matches": ["*://www.facebook.com/*"],
+            "js": ["content.js"],
+            "run_at": "document_idle"
+        }
+    ],
+    "browser_action": {
+        "default_title": "Facebook Cleaner"
+    }
+}
