@@ -11,23 +11,62 @@ function removeUnfollowedPosts() {
   const posts = mainDiv.querySelectorAll('div');
 
   posts.forEach(post => {
-    // Check if the post contains a span with the text "Follow"
     const followElement = post.querySelector('span');
 
-    if (followElement && followElement.innerText === "Follow") {
-      const postToDelete = followElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement;
-      const feed = postToDelete.parentElement;
-
-      feed.removeChild(postToDelete);
-
-      console.log("deleted node");
+    if (isUnfollowedPage(followElement)) {
+      removeUnfollowedPageNode(followElement);
+    } else if (isReelsAndShortsSection(followElement)) {
+      removeReelsAndShortsSection(followElement);
     }
   });
 }
 
+function isUnfollowedPage(followElement) {
+  return followElement && followElement.innerText === "Follow";
+}
+
+function isReelsAndShortsSection(followElement) {
+  return followElement && followElement.innerText === "Reels and short videos";
+}
+
+function getPostToDelete(followElement, depth) {
+  let currentElement = followElement;
+  let steps = 0;
+
+  // Traverse up the DOM tree until the desired ancestor is reached
+  while (currentElement && steps < depth) {
+    currentElement = currentElement.parentElement;
+    steps++;
+  }
+
+  return currentElement;
+}
+
+function removeUnfollowedPageNode(followElement) {
+  const depthFromFeed = 26;
+  const postToDelete = getPostToDelete(followElement, depthFromFeed);
+  const feed = postToDelete.parentElement;
+
+  feed.removeChild(postToDelete);
+  console.log("deleted unfollowed node");
+
+  return;
+}
+
+function removeReelsAndShortsSection(followElement) {
+  const depthFromFeed = 22;
+  const postToDelete = getPostToDelete(followElement, depthFromFeed);
+  const feed = postToDelete.parentElement;
+
+  feed && feed.removeChild(postToDelete);
+  console.log("deleted reels and short video section");
+
+  return;
+}
+
 // Run the function when the page is loaded
 document.addEventListener("DOMContentLoaded", removeUnfollowedPosts);
-console.error("in content.js")
+console.error("in content.js"); // For debugging
 
 // MutationObserver to check for new posts in the feed and apply the filtering
 const observer = new MutationObserver(removeUnfollowedPosts);
